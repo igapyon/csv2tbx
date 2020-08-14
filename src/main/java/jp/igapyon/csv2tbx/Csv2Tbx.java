@@ -49,20 +49,20 @@ import org.w3c.dom.Element;
  * @author Toshiki Iga
  */
 public class Csv2Tbx {
+    private static final String FILENAME = "glossary";
+
     /** Input CSV */
-    private static final String INPUT_CSV = "src/main/resources/glossary.csv";
-    // private static final String INPUT_CSV = "target/glossary.csv";
+    private static final String INPUT_CSV = "src/main/resources/" + FILENAME + ".csv";
+    // private static final String INPUT_CSV = "target/" + FILENAME + ".csv";
 
     /** Input Lang */
     private static final String INPUT_LANG = "en-US";
 
     /** Output TBX */
-    private static final String OUTPUT_TBX = "target/glossary.tbx";
+    private static final String OUTPUT_TBX = "target/" + FILENAME + ".tbx";
 
     /** Output Lang */
     private static final String OUTPUT_LANG = "ja-JP";
-
-    private static final String ADMIN_LANG = "en-US";
 
     /**
      * Entry point.
@@ -80,49 +80,42 @@ public class Csv2Tbx {
         eleMartif.setAttribute("xml:lang", INPUT_LANG);
         document.appendChild(eleMartif);
 
-        // header
-        if (false) {
-            Element eleHeader = document.createElement("header");
-            eleHeader.setAttribute("creationtool", "igapyon csv2tbx"); // Tool name.
-            eleHeader.setAttribute("creationtoolversion", "1.0"); // Tool version.
-            eleHeader.setAttribute("segtype", "block"); // block, paragraph, sentence, phrase
-            eleHeader.setAttribute("o-tmf", "XLIFF");
-            eleHeader.setAttribute("adminlang", ADMIN_LANG);
-            eleHeader.setAttribute("srclang", INPUT_LANG);
-            eleHeader.setAttribute("datatype", "unknown"); // default.
-            eleMartif.appendChild(eleHeader);
-        }
+        Element eleText = document.createElement("text");
+        eleMartif.appendChild(eleText);
 
-        // root element.
         Element eleBody = document.createElement("body");
-        eleMartif.appendChild(eleBody);
+        eleText.appendChild(eleBody);
 
         System.err.println("csv2tbx: read csv file.");
         try (CSVParser parseCsv = CSVFormat.DEFAULT.parse(new BufferedReader(
                 new InputStreamReader(new BOMInputStream(new FileInputStream(INPUT_CSV)), "UTF-8")))) {
             for (CSVRecord record : parseCsv.getRecords()) {
-                Element eleTu = document.createElement("tu");
-                eleBody.appendChild(eleTu);
+                Element eleTermEntry = document.createElement("termEntry");
+                eleBody.appendChild(eleTermEntry);
 
-                Element eleTuvOrg = document.createElement("tuv");
-                eleTuvOrg.setAttribute("xml:lang", INPUT_LANG);
+                Element eleLangSetOrg = document.createElement("langSet");
+                eleLangSetOrg.setAttribute("xml:lang", INPUT_LANG);
                 {
-                    Element eleSeg = document.createElement("seg");
-                    eleTuvOrg.appendChild(eleSeg);
+                    Element eleTig = document.createElement("tig");
+                    eleLangSetOrg.appendChild(eleTig);
+                    Element eleTerm = document.createElement("term");
+                    eleTig.appendChild(eleTerm);
                     // 1st column.
-                    eleSeg.appendChild(document.createTextNode(record.get(0)));
+                    eleTerm.appendChild(document.createTextNode(record.get(0)));
                 }
-                eleTu.appendChild(eleTuvOrg);
+                eleTermEntry.appendChild(eleLangSetOrg);
 
-                Element eleTuvDst = document.createElement("tuv");
-                eleTuvDst.setAttribute("xml:lang", OUTPUT_LANG);
+                Element eleLangSetDst = document.createElement("langSet");
+                eleLangSetDst.setAttribute("xml:lang", OUTPUT_LANG);
                 {
-                    Element eleSeg = document.createElement("seg");
-                    eleTuvDst.appendChild(eleSeg);
+                    Element eleTig = document.createElement("tig");
+                    eleLangSetDst.appendChild(eleTig);
+                    Element eleTerm = document.createElement("term");
+                    eleTig.appendChild(eleTerm);
                     // 2nd column.
-                    eleSeg.appendChild(document.createTextNode(record.get(1)));
+                    eleTerm.appendChild(document.createTextNode(record.get(1)));
                 }
-                eleTu.appendChild(eleTuvDst);
+                eleTermEntry.appendChild(eleLangSetDst);
             }
         }
 
