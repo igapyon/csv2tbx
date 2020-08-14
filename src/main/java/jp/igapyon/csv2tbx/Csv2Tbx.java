@@ -56,13 +56,13 @@ public class Csv2Tbx {
     // private static final String INPUT_CSV = "target/" + FILENAME + ".csv";
 
     /** Input Lang */
-    private static final String INPUT_LANG = "en-US";
+    private static final String INPUT_LANG = "en";
 
     /** Output TBX */
     private static final String OUTPUT_TBX = "target/" + FILENAME + ".tbx";
 
     /** Output Lang */
-    private static final String OUTPUT_LANG = "ja-JP";
+    private static final String OUTPUT_LANG = "ja";
 
     /**
      * Entry point.
