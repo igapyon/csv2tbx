@@ -75,12 +75,13 @@ public class Csv2Tbx {
         // Create empty document.
         final Document document = createEmptyDocument();
 
-        final Element eleTmx = document.createElement("martif");
-        eleTmx.setAttribute("version", "1.4");
-        document.appendChild(eleTmx);
+        final Element eleMartif = document.createElement("martif");
+        eleMartif.setAttribute("type", "TBX-Basic");
+        eleMartif.setAttribute("xml:lang", INPUT_LANG);
+        document.appendChild(eleMartif);
 
         // header
-        {
+        if (false) {
             Element eleHeader = document.createElement("header");
             eleHeader.setAttribute("creationtool", "igapyon csv2tbx"); // Tool name.
             eleHeader.setAttribute("creationtoolversion", "1.0"); // Tool version.
@@ -89,12 +90,12 @@ public class Csv2Tbx {
             eleHeader.setAttribute("adminlang", ADMIN_LANG);
             eleHeader.setAttribute("srclang", INPUT_LANG);
             eleHeader.setAttribute("datatype", "unknown"); // default.
-            eleTmx.appendChild(eleHeader);
+            eleMartif.appendChild(eleHeader);
         }
 
         // root element.
         Element eleBody = document.createElement("body");
-        eleTmx.appendChild(eleBody);
+        eleMartif.appendChild(eleBody);
 
         System.err.println("csv2tbx: read csv file.");
         try (CSVParser parseCsv = CSVFormat.DEFAULT.parse(new BufferedReader(
@@ -127,7 +128,7 @@ public class Csv2Tbx {
 
         // Convert document to xml.
         System.err.println("csv2tbx: write xml file.");
-        dom2xml(eleTmx);
+        dom2xml(eleMartif);
 
         System.err.println("csv2tbx: end: " + OUTPUT_TBX);
     }
@@ -159,6 +160,10 @@ public class Csv2Tbx {
             final Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+            // Custom.
+            transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "TBXBasiccoreStructV02.dtd");
+
             final DOMSource source = new DOMSource(element);
             final OutputStream outStream = new BufferedOutputStream(new FileOutputStream(new File(OUTPUT_TBX)));
             final StreamResult target = new StreamResult(outStream);
