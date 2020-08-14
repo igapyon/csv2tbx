@@ -1,2 +1,2 @@
 # csv2tbx
-Convert CSV to TBX
+Convert CSV to TBX.
